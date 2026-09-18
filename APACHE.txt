@@ -1,0 +1,183 @@
+APACHE
+
+docker pull httpd
+docker run -d -p 8055:80 --name apache httpd
+echo "<h1>Hello</h1>" > index.html
+docker cp index.html apache:/usr/local/apache2/htdocs/
+docker ps
+docker logs apache
+docker stop apache
+docker rm apache
+
+NGINX
+
+# 1. Pull Nginx Image
+docker pull nginx:latest
+
+# 2. Run Nginx (different port from Apache)
+docker run -d -p 8080:80 --name nginx nginx:latest
+
+# 4. Copy file into Nginx container
+docker cp index.html nginx:/usr/share/nginx/html/
+
+# 5. Run with volume (Nginx path)
+docker run -d -p 8080:80 -v $(pwd):/usr/share/nginx/html/ --name nginx nginx
+
+# 6. Custom config mount (Nginx specific)
+docker run -d -p 8080:80 \
+-v $(pwd)/nginx.conf:/etc/nginx/nginx.conf \
+-v $(pwd):/usr/share/nginx/html \
+nginx
+
+FLASK
+
+# 1. Create project folder
+mkdir myapp
+cd myapp
+
+# 2. Create Python file
+nano app.py
+
+# Example code:
+# from flask import Flask
+# app = Flask(__name__)
+# @app.route("/")
+# def hello():
+#     return "Hello from Docker"
+# app.run(host="0.0.0.0", port=5000)
+
+# 3. Create Dockerfile
+nano Dockerfile
+
+# Dockerfile content:
+# FROM python:3.11-slim
+# WORKDIR /app
+# COPY . .
+# RUN pip install flask
+# EXPOSE 5000
+# CMD ["python", "app.py"]
+
+# 4. Build image
+docker build -t myapp .
+
+# 5. Run container from image
+docker run -d -p 5000:5000 myapp
+
+
+MYSQL
+
+
+# 1. Pull MySQL Image
+docker pull mysql:latest
+
+# 2. Run MySQL Container (IMPORTANT)
+docker run -d -e MYSQL_ROOT_PASSWORD=root --name mysql1
+mysql
+
+# 3. Enter MySQL container
+docker exec -it mysql1 mysql -u root -p
+
+# (Enter password: root)
+
+GITHUB
+
+# 🔹 1. Setup Git (first time only)
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+
+# 🔹 2. Start Project (any one)
+
+# New project
+git init
+
+# OR existing project
+git clone https://github.com/username/repo.git
+
+# 🔹 3. Go to project folder
+cd repo_name
+
+# 🔹 4. Create / Edit file
+nano file.txt
+
+# 🔹 5. Check status
+git status
+
+# 🔹 6. Add file to staging
+git add file.txt
+# OR
+git add .
+
+# 🔹 7. Commit changes
+git commit -m "First commit"
+
+# 🔹 8. Push to GitHub
+git push origin main
+
+
+# Create branch
+git checkout -b d-1
+git checkout -b d-2
+
+# Switch branch
+git checkout d-1
+
+# Work on file
+nano file.txt
+git add file.txt
+git commit -m "work on d-1"
+
+# Switch to another branch
+git checkout d-2
+nano file.txt
+git add file.txt
+git commit -m "work on d-2"
+
+
+# Try merge
+git merge d-1
+
+# If conflict comes
+nano file.txt   # resolve conflict
+
+git add file.txt
+git commit -m "conflict resolved"
+
+# Switch to main
+git checkout main
+
+# Merge final branch
+git merge d-2
+
+# Push to GitHub
+git push origin main
+
+
+Floating Point Arithmetic: Taking User Input
+
+#!/bin/bash
+
+read -p "Enter two numbers: " a  b
+
+sum=$(echo "scale=2; $a + $b" | bc)
+prod=$(echo "scale=2; $a * $b" | bc)
+
+echo "Sum = $sum"
+echo "Product = $prod"
+
+
+#!/bin/bash
+
+read -p "Enter three numbers: " a b c
+
+if [ $a -gt $b ] && [ $a -gt $c ]
+then
+    echo "Largest = $a"
+elif [ $b -gt $a ] && [ $b -gt $c ]
+then
+    echo "Largest = $b"
+else
+    echo "Largest = $c"
+fi
+
+
+
